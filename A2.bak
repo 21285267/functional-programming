@@ -2,9 +2,6 @@
 
 (require srfi/1)
 (require srfi/13)
-(require 2htdp/image)
-
-
 ;different objects you have in the game
 (define objects '((1 "a silver dagger")
                   (1 "a gold coin")
@@ -13,18 +10,16 @@
                   (3 "boots")
                   (4 "soda")
                   (5 "water bottle")
-                  (6 "bag of coins")
-                  (7 "gold apple")
-                  (8 "banana")))
+                  (6 "bag of coins")))
 
 (define monster '((3" Big foot")))
 
 
 
 ;different rooms that you can go to 
-(define descriptions '((1 "You are in the lobby" )
-                       (2 "You are in the hallway")
-                       (3 "You are in a swamp")
+(define descriptions '((1 "You are in the lobby.")
+                       (2 "You are in the hallway.")
+                       (3 "You are in a swamp.")
                        (4 "You are in the kitchen")
                        (5 "You are in the bathroom")
                        (6 "You are in the ballroom")
@@ -32,21 +27,16 @@
                        (8 "You are in the box room")
                        (9 "You are in the music room")))
 
-
-
 (define look '(((directions) look) ((look) look) ((examine room) look)))
 (define quit '(((exit game) quit) ((quit game) quit) ((exit) quit) ((quit) quit)))
 ;different actions the user can do an exmple is pick up different items
 (define pick '(((get) pick) ((pickup) pick) ((pick) pick)))
 (define put '(((put) drop) ((drop) drop) ((place) drop) ((remove) drop)))
-(define inventory '(((inventory) inventory) ((bag) inventory) ((check bag) inventory)))
-
-(define health '(((health) health)))
-(define help '(((help) help)))
-(define actions `(,@look ,@quit ,@pick ,@put,@help ,@inventory,@health))
+(define inventory '(((inventory) inventory) ((bag) inventory)))
+(define actions `(,@look ,@quit ,@pick ,@put ,@inventory))
 
 ;additional actions you can take to go to a specific room
-(define decisiontable `((1 ((north) 2) ((west) 3) ((east) 4) ,@actions)
+(define decisiontable `((1 ((north) 2) ((north west) 3) ((east) 4) ,@actions)
                         (2 ((south) 1) ,@actions)
                         (3 ((west) 2) ,@actions)
                         (4 ((north) 2) ((west) 5),@actions)
@@ -199,27 +189,10 @@
                (loop id #f))
               ((eq? response 'inventory)
                (display-inventory)
-               (loop id #f))
-               ((eq? response 'help)
-                ;; Displays Help text on the screen
-                (display-help)
-                (loop id #f))
-
-                ((eq? response 'health)
-                ;; Displays health text on the screen
-                (display-health)
-                (loop id #f))
+               (loop id #f))              
               ((eq? response 'quit)
                (printf "So Long, and Thanks for All the Fish...\n")
                (exit)))))))
 
-
-(define (display-help)
-  (printf "\nHELP\n
-Keywords: help drop pick look health
-"))
-
-(define (display-health)
-  (printf "\nYou have 3💓💓💓 Hearts\n"))
 
 (startgame 1)
