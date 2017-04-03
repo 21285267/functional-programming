@@ -81,17 +81,28 @@
             (printf "You are carrying ~a.\n" output)
             (printf "You can see ~a.\n" output))))))
 
-(define (remove-object-from-room db id str)
+(define (remove-object-from-room db id str) ;;change the name to db
   (when (hash-has-key? db id)
     (let* ((record (hash-ref db id))
            (result (remove (lambda (x) (string-suffix-ci? str x)) record))
            (item (lset-difference equal? record result)))
+;;Add if statment here to refactor
+      ;;(if (eq? db inventorydb
+      ;;(cond ((null? itme)
+      ;;(printf "you are not carrying that item!\n"))
+      ;;(else
+      ;;(printf "Removed~a from your bag.\n" (first item))
+      ;;(add-object objectdb id (first item))
+      ;;(hash-set! db 'bag result))))))
+      ;;(else
       (cond ((null? item) 
              (printf "I don't see that item in the room!\n"))
             (else
              (printf "Added ~a to your bag.\n" (first item))
              (add-object inventorydb 'bag (first item))
              (hash-set! db id result))))))
+
+
 
 (define (remove-object-from-inventory db id str)
   (when (hash-has-key? db 'bag)
