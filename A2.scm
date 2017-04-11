@@ -3,10 +3,19 @@
 (require srfi/1)
 (require srfi/13)
 (require 2htdp/image)
+(require (prefix-in srfi: srfi/1))
+;;images
+
+;;
+(define key(bitmap "C:/Users/User/Desktop/FP/img/DaggerS.bmp"))
+
+
+
+
 
 
 ;different objects you have in the game
-(define objects '((1 "a silver dagger")
+(define objects '((1 "silver dagger")
                   (1 "a gold coin")
                   (1 "key")
                   (2 "gold sword")
@@ -17,44 +26,83 @@
                   (7 "gold apple")
                   (8 "banana")))
 
-(define monster '((3" Big foot")))
+
+
+(define monster '((8" Big foot")
+                  (3 "Zombie")))
 
 
 
 ;different rooms that you can go to 
-(define descriptions '((1 "You are in the lobby" )
-                       (2 "You are in the hallway")
-                       (3 "You are in a swamp")
+(define descriptions '((1 "You are in the lobby.")
+                       (2 "You are in the hallway.")
+                       (3 "You are in a swamp.")
                        (4 "You are in the kitchen")
                        (5 "You are in the bathroom")
                        (6 "You are in the ballroom")
                        (7 "You are in the utility room")
                        (8 "You are in the box room")
-                       (9 "You are in the music room")))
-
-
+                       (9 "You are in the music room")
+                       (10"You are in the kings room")))
 
 (define look '(((directions) look) ((look) look) ((examine room) look)))
 (define quit '(((exit game) quit) ((quit game) quit) ((exit) quit) ((quit) quit)))
 ;different actions the user can do an exmple is pick up different items
 (define pick '(((get) pick) ((pickup) pick) ((pick) pick)))
 (define put '(((put) drop) ((drop) drop) ((place) drop) ((remove) drop)))
-(define inventory '(((inventory) inventory) ((bag) inventory) ((check bag) inventory)))
-
-(define health '(((health) health)))
-(define help '(((help) help)))
-(define actions `(,@look ,@quit ,@pick ,@put,@help ,@inventory,@health))
+(define inventory '(((inventory) inventory) ((bag) inventory)))
+(define help '(((help) help) ((help) help)))
+(define health '(((health) health) ((health) health)))
+(define actions `(,@look ,@quit ,@pick ,@put ,@inventory,@help,@health))
 
 ;additional actions you can take to go to a specific room
-(define decisiontable `((1 ((north) 2) ((west) 3) ((east) 4) ,@actions)
-                        (2 ((south) 1) ,@actions)
-                        (3 ((west) 2) ,@actions)
-                        (4 ((north) 2) ((west) 5),@actions)
-                        (5 ((south) 4) (east) 6,@actions)
-                        (6 ((east) 3) ((west) 1) ((sout) 9),@actions)))
+(define decisiontable `((1 ((south) 2),@actions)
+                        (2 ((east) 3) ((south) 6) ((west) 4) ,@actions)
+                        (3 ((west) 2) ((run) 1),@actions)
+                        (4 ((east) 2) ,@actions)
+                        (5 ((north) 6) ((east) 7),@actions)
+                        (6 ((north) 6) ((south) 5),@actions)
+                        (7 ((west) 5) ((east) 9) ((south) 8),@actions)
+                        (8 ((north) 7) ((south) 10) ((run) 7),@actions)
+                        (9 ((west) 7),@actions)
+                        (10((north) 8),@actions)))
 ;this is going to refference the different objects in the data base that the user will
 ;find in the different rooms
+;;;monsterrr;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+
+
+(define monsterdb (make-hash))
+(define inventorydb1 (make-hash))
+
+(define (add-monster db1 id monster)
+  (if (hash-has-key? db1 id)
+      (let ((record (hash-ref db1 id)))
+        (hash-set! db1 id (cons monster record)))
+      (hash-set! db1 id (cons monster empty))))
+
+(define (add-monsters db1)
+  (for-each
+   (lambda (r) 
+     (add-monster db1 (first r) (second r))) monster))
+
+(add-monsters monsterdb)
+
+(define (display-monster db1 id)
+  (when (hash-has-key? db1 id)
+    (let* ((record (hash-ref db1 id))
+           (output (string-join record " and ")))
+      (when (not (equal? output ""))
+        (if (eq? id 'bag)
+            (printf "You are carrying ~a.\n" output)
+            (printf "You can see ~a.\n" output))))))
+
+
+
+
+
+;;;monsterrr;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define objectdb (make-hash))
 (define inventorydb (make-hash))
@@ -86,25 +134,13 @@
     (let* ((record (hash-ref db id))
            (result (remove (lambda (x) (string-suffix-ci? str x)) record))
            (item (lset-difference equal? record result)))
-;;Add if statment here to refactor
-      ;;(if (eq? db inventorydb
-      ;;(cond ((null? itme)
-      ;;(printf "you are not carrying that item!\n"))
-      ;;(else
-      ;;(printf "Removed~a from your bag.\n" (first item))
-      ;;(add-object objectdb id (first item))
-      ;;(hash-set! db 'bag result))))))
-      ;;(else
       (cond ((null? item) 
              (printf "I don't see that item in the room!\n"))
             (else
              (printf "Added ~a to your bag.\n" (first item))
              (add-object inventorydb 'bag (first item))
-             (hash-set! db id result))))))
-
-
-
-(define (remove-object-from-inventory db id str)
+             (hash-set! db id result)))))
+  ;; Here I have removed the define in order to make the code shorter and remove duplicaitons
   (when (hash-has-key? db 'bag)
     (let* ((record (hash-ref db 'bag))
            (result (remove (lambda (x) (string-suffix-ci? str x)) record))
@@ -119,10 +155,11 @@
 (define (pick-item id input)
   (let ((item (string-join (cdr (string-split input)))))
     (remove-object-from-room objectdb id item)))
-
+;; For this defenition I had to change the name to remove-object-from-room in order to make the invetory
+;; database link together 
 (define (put-item id input)
   (let ((item (string-join (cdr (string-split input)))))
-    (remove-object-from-inventory inventorydb id item)))
+    (remove-object-from-room inventorydb id item)))
 
 (define (display-inventory)
   (display-objects inventorydb 'bag))
@@ -188,7 +225,9 @@
   (let loop ((id initial-id) (description #t))
     (when description
       (display-description id)
-      (display-objects objectdb id))
+      (display-objects objectdb id)
+      (display-monster monsterdb id))
+    ;;Displaying the monster from defenition so if define use this
     (printf "> ")
     (let* ((input (read-line))
            (string-tokens (string-tokenize input))
@@ -216,6 +255,8 @@
                 (display-help)
                 (loop id #f))
 
+            
+
                 ((eq? response 'health)
                 ;; Displays health text on the screen
                 (display-health)
@@ -228,9 +269,11 @@
 (define (display-help)
   (printf "\nHELP\n
 Keywords: help drop pick look health
+User ''run'' in emergency!!!!!!
 "))
 
+
 (define (display-health)
-  (printf "\nYou have 3💓💓💓 Hearts\n"))
+  (printf "\nYou have 3 Hearts\n"))
 
 (startgame 1)
