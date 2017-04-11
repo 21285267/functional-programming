@@ -29,12 +29,15 @@
                   (5 "water bottle")
                   (6 "bag of coins")
                   (7 "gold apple")
-                  (8 "banana")))
+                  (8 "banana")
+                  (8 "Crown")))
 
 
 
 (define monster '((8" Big foot")
-                  (3 "Zombie" )))
+                  (3 "Zombie" )
+                  (6 "Ghost")
+                  (10 "Mummy")))
 
 
 
@@ -57,20 +60,23 @@
 (define put '(((put) drop) ((drop) drop) ((place) drop) ((remove) drop)))
 (define inventory '(((inventory) inventory) ((bag) inventory)))
 (define help '(((help) help) ((help) help)))
+(define kills '(((kills) kills) ((dead) kills)))
 (define health '(((health) health) ((health) health)))
-(define actions `(,@look ,@quit ,@pick ,@put ,@inventory,@help,@health))
+(define kick '(((kick) kick) ((kick) kick)))
+(define actions `(,@look ,@quit ,@pick ,@put ,@inventory,@help,@health,@kick,@kills))
+
 
 ;additional actions you can take to go to a specific room
 (define decisiontable `((1 ((south) 2),@actions)
-                        (2 ((east) 3) ((south) 6) ((west) 4) ,@actions)
+                        (2 ((east) 3) ((south) 6) ((west) 4) ((north) 1) ,@actions)
                         (3 ((west) 2) ((run) 1),@actions)
                         (4 ((east) 2) ,@actions)
                         (5 ((north) 6) ((east) 7),@actions)
-                        (6 ((north) 6) ((south) 5),@actions)
+                        (6 ((north) 2) ((south) 5),@actions)
                         (7 ((west) 5) ((east) 9) ((south) 8),@actions)
                         (8 ((north) 7) ((south) 10) ((run) 7),@actions)
                         (9 ((west) 7),@actions)
-                        (10((north) 8),@actions)))
+                        (10((north) 8) ((run) 10),@actions)))
 ;this is going to refference the different objects in the data base that the user will
 ;find in the different rooms
 ;;;monsterrr;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -99,12 +105,31 @@
     (let* ((record (hash-ref db1 id))
            (output (string-join record " and ")))
       (when (not (equal? output ""))
-        (if (eq? id 'bag)
-            (printf "You are carrying ~a.\n" output)
+        (if (eq? id 'kills)
+            (printf "You killed ~a.\n" output)
             (printf "You can see ~a.\n" output))))))
 
+(define (remove-monster-from-room db1 id str) ;;change the name to db
+  (when (hash-has-key? db1 id)
+    (let* ((record (hash-ref db1 id))
+           (result (remove (lambda (x) (string-suffix-ci? str x)) record))
+           (item (lset-difference equal? record result)))
+      (cond ((null? item) 
+             (printf "I don't see that monster in the room!\n"))
+            (else
+             (printf "Kicked ~a to its Death.\n" (first item))
+             (add-monster inventorydb1 'kills (first item))
+             (hash-set! db1 id result))))))
 
 
+;;monster kick
+(define (kick-item id input)
+  (let ((item (string-join (cdr (string-split input)))))
+    (remove-monster-from-room monsterdb id item)))
+
+
+(define (display-kills)
+  (display-monster inventorydb1 'kills))
 
 
 ;;;monsterrr;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -160,6 +185,9 @@
 (define (pick-item id input)
   (let ((item (string-join (cdr (string-split input)))))
     (remove-object-from-room objectdb id item)))
+
+
+
 ;; For this defenition I had to change the name to remove-object-from-room in order to make the invetory
 ;; database link together 
 (define (put-item id input)
@@ -259,6 +287,14 @@
                 ;; Displays Help text on the screen
                 (display-help)
                 (loop id #f))
+               ;;monster
+               ((eq? response 'kick)
+               (kick-item id input)
+               (loop id #f))
+
+                ((eq? response 'kills)
+               (display-kills)
+               (loop id #f))
 
             
 
@@ -273,8 +309,10 @@
 
 (define (display-help)
   (printf "\nHELP\n
-Keywords: help drop pick look health
-User ''run'' in emergency!!!!!!
+Keywords: help drop pick look health 
+You can use Kick to kill any monster
+You can check how many kills you made by writing kills
+User ''run'' back save time run can be used only in specic points but the user dosent know the player runs blindley!!!!!!
 "))
 
 
