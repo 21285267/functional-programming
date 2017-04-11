@@ -7,9 +7,12 @@
 ;;images
 
 ;;
-(define key(bitmap "C:/Users/User/Desktop/FP/img/DaggerS.bmp"))
+(define key(bitmap "C:/Users/User/Desktop/Folder/functional-programming/img/Key.bmp"))
+(display key)
 
-
+(define Zombie(bitmap "C:/Users/User/Desktop/Folder/functional-programming/img/Zombie.bmp"))
+(display Zombie)
+;;C:/Users/User/Desktop/Folder/functional-programming
 
 
 
@@ -29,7 +32,7 @@
 
 
 (define monster '((8" Big foot")
-                  (3 "Zombie")))
+                  (3 "Zombie" )))
 
 
 
