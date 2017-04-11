@@ -6,7 +6,8 @@
 (require (prefix-in srfi: srfi/1))
 ;;images
 
-;;
+;;The code is getting the lockation of the image that I have stored and formated into a bitmap
+;;I have also added a next line this is to prevent the text from getting warped
 (define Map(bitmap "C:/Users/User/Desktop/Folder/functional-programming/img/Map.bmp"))
 (display Map) (newline)
 
@@ -19,7 +20,7 @@
 
 
 
-;different objects you have in the game
+;different objects you have in the game that I are spreed out over the 10 different rooms that I have created the user is going to be able to collect them all
 (define objects '((1 "silver dagger")
                   (1 "a gold coin")
                   (1 "key")
@@ -32,7 +33,7 @@
                   (8 "banana")
                   (8 "Crown")))
 
-
+;; defining the monsters that are going to be pred out around the room the number infront navigate where the monsters are going to be
 
 (define monster '((8" Big foot")
                   (3 "Zombie" )
@@ -41,7 +42,7 @@
 
 
 
-;different rooms that you can go to 
+;different rooms that the user can go to I have created 10 and the user will be able to go to any of them
 (define descriptions '((1 "You are in the lobby.")
                        (2 "You are in the hallway.")
                        (3 "You are in a swamp." )
@@ -52,10 +53,10 @@
                        (8 "You are in the box room")
                        (9 "You are in the music room")
                        (10"You are in the kings room")))
-
+;; This are the different actions that the user can do pick up items drop them and much more.
 (define look '(((directions) look) ((look) look) ((examine room) look)))
 (define quit '(((exit game) quit) ((quit game) quit) ((exit) quit) ((quit) quit)))
-;different actions the user can do an exmple is pick up different items
+
 (define pick '(((get) pick) ((pickup) pick) ((pick) pick)))
 (define put '(((put) drop) ((drop) drop) ((place) drop) ((remove) drop)))
 (define inventory '(((inventory) inventory) ((bag) inventory)))
@@ -63,10 +64,11 @@
 (define kills '(((kills) kills) ((dead) kills)))
 (define health '(((health) health) ((health) health)))
 (define kick '(((kick) kick) ((kick) kick)))
+;;defining the different actions means that now if the user writes that action they will be work
 (define actions `(,@look ,@quit ,@pick ,@put ,@inventory,@help,@health,@kick,@kills))
 
 
-;additional actions you can take to go to a specific room
+;additional actions you can take to go to a specific room navigating around the room
 (define decisiontable `((1 ((south) 2),@actions)
                         (2 ((east) 3) ((south) 6) ((west) 4) ((north) 1) ,@actions)
                         (3 ((west) 2) ((run) 1),@actions)
@@ -79,9 +81,9 @@
                         (10((north) 8) ((run) 10),@actions)))
 ;this is going to refference the different objects in the data base that the user will
 ;find in the different rooms
+
+;; This is the monsters database
 ;;;monsterrr;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
 
 
 (define monsterdb (make-hash))
@@ -99,7 +101,7 @@
      (add-monster db1 (first r) (second r))) monster))
 
 (add-monsters monsterdb)
-
+;;in here you will be able to see how many monsters have you killed
 (define (display-monster db1 id)
   (when (hash-has-key? db1 id)
     (let* ((record (hash-ref db1 id))
@@ -108,7 +110,7 @@
         (if (eq? id 'kills)
             (printf "You killed ~a.\n" output)
             (printf "You can see ~a.\n" output))))))
-
+;;I have refactored this code as well I removed the defining remove
 (define (remove-monster-from-room db1 id str) ;;change the name to db
   (when (hash-has-key? db1 id)
     (let* ((record (hash-ref db1 id))
@@ -122,7 +124,7 @@
              (hash-set! db1 id result))))))
 
 
-;;monster kick
+;;monster kick removes the players from the game and adds them to the graveyard
 (define (kick-item id input)
   (let ((item (string-join (cdr (string-split input)))))
     (remove-monster-from-room monsterdb id item)))
@@ -181,7 +183,7 @@
              (printf "Removed ~a from your bag.\n" (first item))
              (add-object objectdb id (first item))
              (hash-set! db 'bag result))))))
-             
+           ;;This picks up the itmes and adds them to the bag it uses the actions from top
 (define (pick-item id input)
   (let ((item (string-join (cdr (string-split input)))))
     (remove-object-from-room objectdb id item)))
@@ -261,6 +263,8 @@
       (display-objects objectdb id)
       (display-monster monsterdb id))
     ;;Displaying the monster from defenition so if define use this
+    ;;This displays the monster colome that can bee seen at the top you can also get the descriptions which are the rooms
+    ;;And you can get the different objects
     (printf "> ")
     (let* ((input (read-line))
            (string-tokens (string-tokenize input))
@@ -291,22 +295,19 @@
                ((eq? response 'kick)
                (kick-item id input)
                (loop id #f))
-
+               ;; this is going to display how many kills the player has made
                 ((eq? response 'kills)
                (display-kills)
                (loop id #f))
-
-            
-
+                 ;; Displays health text on the screen
                 ((eq? response 'health)
-                ;; Displays health text on the screen
                 (display-health)
                 (loop id #f))
               ((eq? response 'quit)
                (printf "So Long, and Thanks for All the Fish...\n")
                (exit)))))))
 
-
+;;This is going to be a help button when the user writes HELP they will see this description which will help them to play the game
 (define (display-help)
   (printf "\nHELP\n
 Keywords: help drop pick look health 
@@ -315,7 +316,7 @@ You can check how many kills you made by writing kills
 User ''run'' back save time run can be used only in specic points but the user dosent know the player runs blindley!!!!!!
 "))
 
-
+;;This is going to disply the health that the user has 
 (define (display-health)
   (printf "\nYou have 3 Hearts\n"))
 
