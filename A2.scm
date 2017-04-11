@@ -7,11 +7,13 @@
 ;;images
 
 ;;
-(define key(bitmap "C:/Users/User/Desktop/Folder/functional-programming/img/Key.bmp"))
-(display key)
+(define Map(bitmap "C:/Users/User/Desktop/Folder/functional-programming/img/Map.bmp"))
+(display Map) (newline)
 
-(define Zombie(bitmap "C:/Users/User/Desktop/Folder/functional-programming/img/Zombie.bmp"))
-(display Zombie)
+;;(define key(bitmap "C:/Users/User/Desktop/Folder/functional-programming/img/Key.bmp"))
+;;(display key)(newline)
+
+
 ;;C:/Users/User/Desktop/Folder/functional-programming
 
 
@@ -39,7 +41,7 @@
 ;different rooms that you can go to 
 (define descriptions '((1 "You are in the lobby.")
                        (2 "You are in the hallway.")
-                       (3 "You are in a swamp.")
+                       (3 "You are in a swamp." )
                        (4 "You are in the kitchen")
                        (5 "You are in the bathroom")
                        (6 "You are in the ballroom")
