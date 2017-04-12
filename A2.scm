@@ -1,5 +1,5 @@
 #lang racket
-
+;; This are the required drivers in order to make the applicaition to run
 (require srfi/1)
 (require srfi/13)
 (require 2htdp/image)
@@ -151,7 +151,7 @@
      (add-object db (first r) (second r))) objects))
 
 (add-objects objectdb)
-
+;;This is going to display all of the object that the user has collected over the game
 (define (display-objects db id)
   (when (hash-has-key? db id)
     (let* ((record (hash-ref db id))
@@ -217,7 +217,7 @@
 
 (define (assq-ref assqlist id)
   (cdr (assq id assqlist)))
-
+;;;;;;;;;;;;
 (define (assv-ref assqlist id)
   (cdr (assv id assqlist)))
 
@@ -314,10 +314,13 @@ Keywords: help drop pick look health
 You can use Kick to kill any monster
 You can check how many kills you made by writing kills
 User ''run'' back save time run can be used only in specic points but the user dosent know the player runs blindley!!!!!!
+To quit the game ''Quit''
 "))
 
 ;;This is going to disply the health that the user has 
 (define (display-health)
   (printf "\nYou have 3 Hearts\n"))
-
+;; this is going to run the game automaticly
 (startgame 1)
+;; this is going to exit the game when the user writes "quit" in the command box
+(exit "quit")
