@@ -11,6 +11,9 @@
 (define Map(bitmap "C:/Users/User/Desktop/Folder/functional-programming/img/Map.bmp"))
 (display Map) (newline)
 
+(define IT(bitmap "C:/Users/User/Desktop/Folder/functional-programming/img/IT.bmp"))
+
+
 ;;(define key(bitmap "C:/Users/User/Desktop/Folder/functional-programming/img/Key.bmp"))
 ;;(display key)(newline)
 
@@ -63,7 +66,7 @@
 (define help '(((help) help) ((help) help)))
 (define kills '(((kills) kills) ((dead) kills)))
 (define health '(((health) health) ((health) health)))
-(define kick '(((kick) kick) ((kick) kick)))
+(define kick '(((kill) kick) ((kick) kick)))
 ;;defining the different actions means that now if the user writes that action they will be work
 (define actions `(,@look ,@quit ,@pick ,@put ,@inventory,@help,@health,@kick,@kills))
 
@@ -190,8 +193,7 @@
 
 
 
-;; For this defenition I had to change the name to remove-object-from-room in order to make the invetory
-;; database link together 
+;; For this defenition I had to change the name to remove-object-from-room in order to make the invetory database link together 
 (define (put-item id input)
   (let ((item (string-join (cdr (string-split input)))))
     (remove-object-from-room inventorydb id item)))
@@ -265,6 +267,8 @@
     ;;Displaying the monster from defenition so if define use this
     ;;This displays the monster colome that can bee seen at the top you can also get the descriptions which are the rooms
     ;;And you can get the different objects
+
+;;; This is the print fuction this will display the fucntions and this will make sure that the game respons to the users command
     (printf "> ")
     (let* ((input (read-line))
            (string-tokens (string-tokenize input))
@@ -304,8 +308,8 @@
                 (display-health)
                 (loop id #f))
               ((eq? response 'quit)
-               (printf "So Long, and Thanks for All the Fish...\n")
-               (exit)))))))
+               (printf "Bye Bye Man...\n" )
+               (exit (display IT))))))))
 
 ;;This is going to be a help button when the user writes HELP they will see this description which will help them to play the game
 (define (display-help)
@@ -316,10 +320,11 @@ You can check how many kills you made by writing kills
 User ''run'' back save time run can be used only in specic points but the user dosent know the player runs blindley!!!!!!
 To quit the game ''Quit''
 "))
-
 ;;This is going to disply the health that the user has 
 (define (display-health)
   (printf "\nYou have 3 Hearts\n"))
+
+
 ;; this is going to run the game automaticly
 (startgame 1)
 ;; this is going to exit the game when the user writes "quit" in the command box
